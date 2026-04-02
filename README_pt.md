@@ -28,7 +28,7 @@ Modelo operacional:
 - [`.claude/scripts/`](./.claude/scripts): launcher e utilitários
 - [`.claude/package.json`](./.claude/package.json): comandos de runtime
 - [`.claude/ccr/`](./.claude/ccr): router custom e route map
-- [`.mcp.json`](./.mcp.json) e [`.claude/mcp.json`](./.claude/mcp.json): configuração MCP no formato Claude
+- [`.mcp.json`](./.mcp.json): configuração MCP no formato Claude
 
 ## Pré-Requisitos
 
@@ -42,53 +42,61 @@ Modelo operacional:
 npm --prefix .claude install
 ```
 
+## CLI Curta (`ccmh`)
+
+Instale a CLI de atalho uma vez:
+
+```bash
+npm --prefix .claude run ccmh:install
+```
+
+Use os comandos `ccmh`:
+
+```bash
+ccmh list:crews
+ccmh use marketing
+ccmh use --marketing
+ccmh --use marketing
+ccmh run --crew marketing
+```
+
 ## Comandos Principais
 
 Listar crews:
 
 ```bash
-npm --prefix .claude run list:crews
+ccmh list:crews
 ```
 
 Selecionar crew ativo:
 
 ```bash
-npm --prefix .claude run use:crew -- <crew>
+ccmh use <crew>
 ```
 
 Limpar crew ativo:
 
 ```bash
-npm --prefix .claude run clear:crew
+ccmh clear
 ```
 
 Abrir Claude TUI com multi-team (alias principal):
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing
-```
-
-Também disponível como:
-
-```bash
-npm --prefix .claude run run:crew:claude -- --crew marketing
+ccmh run --crew marketing
 ```
 
 Retomar sessão (`-c`):
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing -- -c
+ccmh run --crew marketing -- -c
 ```
 
 Espelhar metadados da sessão no diretório da crew (opcional):
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing --session-mirror
+ccmh run --crew marketing --session-mirror
 ```
-
-Notas:
-- O runtime canônico da conversa continua em `~/.claude/projects/...`.
-- Com `--session-mirror`, o launcher cria um espelho em `.claude/crew/<crew>/sessions/...` com `manifest.json`, `session_index.json`, `events.jsonl` e um ponteiro/symlink para `conversation.jsonl`.
 
 ## UX de Hierarquia
 
@@ -99,13 +107,13 @@ Strict hierarchy (padrão):
 Relaxar hierarquia:
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing --no-hierarchy
+ccmh run --crew marketing --no-hierarchy
 ```
 
 Forçar hierarquia strict explicitamente:
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing --hierarchy
+ccmh run --crew marketing --hierarchy
 ```
 
 ## Roteamento no CCR
@@ -113,30 +121,29 @@ npm --prefix .claude run run:crew -- --crew marketing --hierarchy
 Instalar router custom + route map:
 
 ```bash
-npm --prefix .claude run ccr:install-router
-npm --prefix .claude run ccr:sync-route-map
+ccmh ccr:install-router
+ccmh ccr:sync-route-map
 ```
 
 Executar com policy:
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing --policy economy
+ccmh run --crew marketing --policy economy
 ```
 
 Forçar roteamento do root/orchestrator:
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing \
+ccmh run --crew marketing \
   --root-route --root-model lmstudio,nvidia/nemotron-3-nano-4b
 ```
 
 ## MCP (Formato Claude)
 
-Arquivos válidos para Claude:
+Arquivo válido para Claude:
 - [`.mcp.json`](./.mcp.json)
-- [`.claude/mcp.json`](./.claude/mcp.json)
 
-Ambos usam:
+Formato:
 
 ```json
 {
@@ -155,7 +162,7 @@ Ambos usam:
 Mostrar help do launcher:
 
 ```bash
-npm --prefix .claude run run:crew -- --help
+ccmh run --help
 ```
 
 Se o CCR não aplicar mudanças de rota:
@@ -167,7 +174,7 @@ ccr restart
 Se quiser validar o comando sem abrir a TUI:
 
 ```bash
-npm --prefix .claude run run:crew -- --crew marketing --dry-run -- --version
+ccmh run --crew marketing --dry-run -- --version
 ```
 
 ## Suporte e Patrocínio

@@ -88,6 +88,7 @@ function parseArgs(argv) {
     dryRun: false,
     fullPrompts: false,
     rootRoute: false,
+    showLaunchInfo: false,
     passthrough: [],
   };
 
@@ -170,6 +171,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--show-launch-info") {
+      args.showLaunchInfo = true;
+      continue;
+    }
+
     if (token === "--hierarchy") {
       args.strictHierarchy = true;
       continue;
@@ -187,7 +193,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log("Usage: npm --prefix .claude run run:crew -- [options] [-- <claude-args>]");
+  console.log("Usage: ccmh run [options] [-- <claude-args>]");
   console.log("");
   console.log("Open Claude Code TUI through CCR, loading crew agents as custom agents.");
   console.log("");
@@ -202,17 +208,18 @@ function printHelp() {
   console.log("  --session-mirror         Mirror Claude session pointers under .claude/crew/<crew>/sessions");
   console.log("  --full-prompts           Inject full agent markdown prompts (larger context usage)");
   console.log("  --root-route             Route orchestrator/root turn by policy");
+  console.log("  --show-launch-info       Print launcher runtime details before opening TUI");
   console.log(`  --hierarchy              Strict hierarchy mode (default: ${DEFAULT_STRICT_HIERARCHY ? "enabled" : "disabled"})`);
   console.log("  --no-hierarchy           Allow orchestrator to delegate directly to workers");
   console.log("  --dry-run                Print generated command and exit");
   console.log("");
   console.log("Examples:");
-  console.log("  npm --prefix .claude run run:crew -- --crew marketing");
-  console.log("  npm --prefix .claude run run:crew -- --crew marketing --policy economy");
-  console.log("  npm --prefix .claude run run:crew -- --crew marketing --root-route --root-model lmstudio,nvidia/nemotron-3-nano-4b");
-  console.log("  npm --prefix .claude run run:crew -- --crew marketing --session-mirror -- -p \"status\"");
-  console.log("  npm --prefix .claude run run:crew -- --crew marketing -- -c");
-  console.log("  npm --prefix .claude run run:crew -- --crew marketing -- --permission-mode bypassPermissions -c");
+  console.log("  ccmh run --crew marketing");
+  console.log("  ccmh run --crew marketing --policy economy");
+  console.log("  ccmh run --crew marketing --root-route --root-model lmstudio,nvidia/nemotron-3-nano-4b");
+  console.log("  ccmh run --crew marketing --session-mirror -- -p \"status\"");
+  console.log("  ccmh run --crew marketing -- -c");
+  console.log("  ccmh run --crew marketing -- --permission-mode bypassPermissions -c");
 }
 
 function stripYamlComments(line) {
@@ -519,7 +526,7 @@ function resolveConfigPath(args) {
     return path.join(crewRoot, crews[0], "multi-team.yaml");
   }
 
-  fail("no crew selected. Use --crew <name> or activate one with npm --prefix .claude run use:crew -- <crew>");
+  fail("no crew selected. Use --crew <name> or activate one with ccmh use <crew>");
   if (crews.length > 0) {
     console.log("Available crews:");
     for (const crew of crews) console.log(`- ${crew}`);
@@ -1046,23 +1053,25 @@ function main() {
     env.ANTHROPIC_API_KEY = env.ANTHROPIC_AUTH_TOKEN.trim();
   }
 
-  console.log("Running Claude Code TUI via CCR with multi-agent crew config");
-  console.log(`- config=${path.relative(repoRoot, configPath)}`);
-  console.log(`- system=${config.name || "MultiTeam"}`);
-  console.log(`- policy=${policy}`);
-  console.log(`- root_route=${includeRootRouteTag ? "enabled" : "disabled"}`);
-  console.log(`- hierarchy=${args.strictHierarchy ? "strict" : "relaxed"}`);
-  console.log(`- root_model=${rootModel || "(default CCR routing)"}`);
-  console.log(`- custom_agents=${Object.keys(agents).length}`);
-  console.log(`- prompt_mode=${args.fullPrompts ? "full" : "compact"}`);
-  console.log(`- runner=${command}`);
-  if (args.sessionMirror) console.log(`- session_mirror=${sessionMirrorReason ? `disabled (${sessionMirrorReason})` : "enabled"}`);
-  if (claudeSessionId) console.log(`- claude_session_id=${claudeSessionId}`);
-  if (!args.noActivate) console.log("- ccr_activate=enabled");
-  if (env.ANTHROPIC_BASE_URL) console.log(`- ANTHROPIC_BASE_URL=${env.ANTHROPIC_BASE_URL}`);
-  if (env.ANTHROPIC_API_KEY) console.log("- ANTHROPIC_API_KEY=***");
-  if (args.passthrough.length > 0) console.log(`- args=${args.passthrough.join(" ")}`);
-  console.log("");
+  if (args.showLaunchInfo || args.dryRun) {
+    console.log("Running Claude Code TUI via CCR with multi-agent crew config");
+    console.log(`- config=${path.relative(repoRoot, configPath)}`);
+    console.log(`- system=${config.name || "MultiTeam"}`);
+    console.log(`- policy=${policy}`);
+    console.log(`- root_route=${includeRootRouteTag ? "enabled" : "disabled"}`);
+    console.log(`- hierarchy=${args.strictHierarchy ? "strict" : "relaxed"}`);
+    console.log(`- root_model=${rootModel || "(default CCR routing)"}`);
+    console.log(`- custom_agents=${Object.keys(agents).length}`);
+    console.log(`- prompt_mode=${args.fullPrompts ? "full" : "compact"}`);
+    console.log(`- runner=${command}`);
+    if (args.sessionMirror) console.log(`- session_mirror=${sessionMirrorReason ? `disabled (${sessionMirrorReason})` : "enabled"}`);
+    if (claudeSessionId) console.log(`- claude_session_id=${claudeSessionId}`);
+    if (!args.noActivate) console.log("- ccr_activate=enabled");
+    if (env.ANTHROPIC_BASE_URL) console.log(`- ANTHROPIC_BASE_URL=${env.ANTHROPIC_BASE_URL}`);
+    if (env.ANTHROPIC_API_KEY) console.log("- ANTHROPIC_API_KEY=***");
+    if (args.passthrough.length > 0) console.log(`- args=${args.passthrough.join(" ")}`);
+    console.log("");
+  }
 
   if (args.dryRun) {
     console.log(`[dry-run] ${command} ${commandArgs.map((arg) => (arg.includes(" ") ? JSON.stringify(arg) : arg)).join(" ")}`);
@@ -1081,7 +1090,7 @@ function main() {
       })
     : null;
 
-  if (mirror) {
+  if (mirror && (args.showLaunchInfo || args.dryRun)) {
     console.log(`- mirror_root=${path.relative(repoRoot, mirror.mirrorRoot)}`);
     console.log(`- mirror_conversation=${mirror.claudeConversationPath}`);
     console.log("");

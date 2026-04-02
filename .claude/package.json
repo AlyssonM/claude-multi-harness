@@ -2,6 +2,9 @@
   "name": "multi-agents-claude-runtime",
   "private": true,
   "type": "module",
+  "bin": {
+    "ccmh": "bin/ccmh"
+  },
   "scripts": {
     "list:crews": "node scripts/list-crews.mjs",
     "use:crew": "node scripts/use-crew.mjs",
@@ -10,6 +13,7 @@
     "run:crew:claude": "node scripts/run-crew-claude.mjs",
     "ccr:install-router": "node scripts/install-ccr-router.mjs",
     "ccr:sync-route-map": "node scripts/sync-ccr-route-map.mjs",
+    "ccmh:install": "node scripts/install-ccmh.mjs",
     "list:packs": "node scripts/list-crews.mjs",
     "use:pack": "node scripts/use-crew.mjs"
   }

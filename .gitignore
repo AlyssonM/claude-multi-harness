@@ -16,7 +16,9 @@ __pycache__/
 !.claude/crew/**/sessions/
 !.claude/crew/**/sessions/.gitkeep
 .claude/.active-crew.json
-.claude/bin/
+.claude/bin/*
+!.claude/bin/
+!.claude/bin/ccmh
 .opencode/**/sessions/**
 !.opencode/**/sessions/
 !.opencode/**/sessions/.gitkeep
