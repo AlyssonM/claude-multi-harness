@@ -1,0 +1,4 @@
+[submodule "third_party/claude-code-router"]
+	path = third_party/claude-code-router
+	url = https://github.com/AlyssonM/claude-code-router.git
+	branch = main
