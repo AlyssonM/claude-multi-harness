@@ -13,7 +13,7 @@ Operational model:
 - `team leads`
 - `workers`
 
-## What This Branch Delivers
+## What This Project Delivers
 
 - Single launcher for Claude TUI with crews: `run:crew`
 - Automatic custom-agent generation from `.claude/crew/<crew>/multi-team.yaml`
