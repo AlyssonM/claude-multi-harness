@@ -2,6 +2,8 @@
   <img src="./assets/claude-code-multi-harness.png" alt="CLAUDE CODE MULTI HARNESS" width="100%" />
 </p>
 
+[![](https://img.shields.io/badge/%F0%9F%87%A7%F0%9F%87%B7-README%20PT--BR-009C3B?style=flat)](README_pt.md)
+
 # Claude Multi-Team Harness
 
 A multi-team/multi-agent runtime focused on **Claude Code TUI + Claude Code Router (CCR)**.
