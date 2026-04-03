@@ -1,18 +1,18 @@
 ---
 name: multi-team-bootstrap
-description: Build a new PI multi-team crew from a minimal specification across domains (coding, productivity, teaching, marketing, ads). Infer teams, members, tools, MCP access, and initial domain rules.
+description: Build a new Claude multi-team crew from a minimal specification across domains (coding, productivity, teaching, marketing, ads). Infer teams, members, tools, MCP access, and initial domain rules.
 ---
 
 # Multi-Team Bootstrap
 
-Use this skill when the user provides goals and desired scopes and wants a ready-to-run PI multi-team setup with:
+Use this skill when the user provides goals and desired scopes and wants a ready-to-run Claude multi-team setup with:
 
 - topology YAML
 - agent prompts
 - initial expertise files
 - sensible tool/domain defaults
 
-This skill is portable in spirit (Markdown + plain files), but this version is optimized for PI conventions.
+This skill is portable in spirit (Markdown + plain files), but this version is optimized for Claude Code TUI + CCR conventions.
 
 ## Minimal Input Spec
 
@@ -95,9 +95,9 @@ Profile worker defaults:
 - `custom`
   - infer names from goals, using `<capability>-lead` plus 1-3 workers per stream
 
-## Tool Inference Rules (PI)
+## Tool Inference Rules (Claude)
 
-Use PI tool names and runtime semantics:
+Use Claude harness tool names and runtime semantics:
 
 - Orchestrator: `delegate_agent`, `update_mental_model`
 - Leads: `delegate_agent`, `update_mental_model`
@@ -105,19 +105,19 @@ Use PI tool names and runtime semantics:
 - Document/spec/content workers: add `write`, `edit`
 - Code/script execution workers: add `bash`
 
-Avoid OpenCode-only names (`task`, `update-mental-model`, `glob`, `list`) in PI output.
+Avoid OpenCode-only names (`task`, `update-mental-model`, `glob`, `list`) in Claude output.
 
-## MCP Inference Rules (PI)
+## MCP Inference Rules (Claude)
 
 If `enable_mcp: true`:
 
-- add PI MCP bridge tools to all leads: `mcp_servers`, `mcp_tools`, `mcp_call`
-- add PI MCP bridge tools to planning/research workers and any worker requiring external systems
+- add Claude MCP bridge tools to all leads: `mcp_servers`, `mcp_tools`, `mcp_call`
+- add Claude MCP bridge tools to planning/research workers and any worker requiring external systems
 - infer MCP server usage from goals (examples: `clickup`, `github`, `context7`, `brave-search`, `firecrawl`, `zeplin`)
 
 ## Domain Inference Rules
 
-For each agent, build ownership paths with PI domain flags:
+For each agent, build ownership paths with Claude domain flags:
 
 - global read-only baseline:
   - `path: .`
@@ -135,9 +135,9 @@ Guidelines:
 - workers write only to stream-owned paths
 - validation workers stay read-only unless corrective edits are explicitly requested
 
-## Prompt and Frontmatter Rules (PI)
+## Prompt and Frontmatter Rules (Claude)
 
-Each agent `.md` must follow PI conventions:
+Each agent `.md` must follow the Claude harness conventions:
 
 - frontmatter:
   - `name`
@@ -209,7 +209,7 @@ open_questions: []
 
 Output is acceptable only if:
 
-- it can run with `PI_MULTI_CONFIG=<path> pi -e extensions/multi-team.ts`
+- it can be selected with `ccmh use <crew>` and launched with `ccmh run --crew <crew>`
 - no worker has `edit/bash` outside owned scope
 - leads do not get direct `edit/bash` by default
 - prompts clearly match selected profile and goals
