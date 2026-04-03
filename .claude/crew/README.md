@@ -26,7 +26,7 @@ Current crews in this branch:
 Useful commands:
 
 ```bash
-npm --prefix .claude run list:crews
-npm --prefix .claude run use:crew -- <crew>
-npm --prefix .claude run run:crew -- --crew <crew>
+ccmh list:crews
+ccmh use <crew>
+ccmh run --crew <crew>
 ```
