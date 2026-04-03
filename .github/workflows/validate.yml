@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install Claude runtime dependencies
+        run: npm --prefix .claude ci
+
       - name: Check runtime files
         run: npm --prefix .claude run check:runtime
 

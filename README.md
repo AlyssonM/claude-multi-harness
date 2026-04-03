@@ -3,7 +3,7 @@
 </p>
 
 [![](https://img.shields.io/badge/%F0%9F%87%A7%F0%9F%87%B7-README%20PT--BR-009C3B?style=flat)](README_pt.md)
-[![](https://img.shields.io/github/last-commit/AlyssonM/claude-multi-harness?style=flat)](https://github.com/AlyssonM/claude-multi-harness/commits)
+[![](https://img.shields.io/github/last-commit/AlyssonM/multi-agents?style=flat)](https://github.com/AlyssonM/multi-agents/commits)
 [![](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=000000)](https://buymeacoffee.com/alyssonm)
 
 # Claude Multi-Team Harness
@@ -36,14 +36,17 @@ Operational model:
 - Strict hierarchy by default (`orchestrator -> leads`)
 - Hierarchy opt-out with `--no-hierarchy`
 - MCP configuration compatible with Claude's expected format (`mcpServers`)
+- Durable per-agent expertise backed by a local MCP tool: `update_mental_model`
 
 ## Structure
 
 - [`.claude/crew/`](./.claude/crew): crew definitions
+- [`.claude/crew/<crew>/expertise/`](./.claude/crew): durable mental-model files per agent
 - [`.claude/scripts/`](./.claude/scripts): launcher and utilities
 - [`.claude/package.json`](./.claude/package.json): runtime commands
 - [`.claude/ccr/`](./.claude/ccr): custom router and route map
 - [`.mcp.json`](./.mcp.json): Claude-format MCP config
+- [`docs/mental-model.md`](./docs/mental-model.md): durable expertise and updater behavior
 
 ## Prerequisites
 
@@ -180,6 +183,51 @@ Format:
   }
 }
 ```
+
+This runtime also ships a local MCP server:
+
+- `mental-model` -> exposes `update_mental_model`
+- used by agents to persist durable expertise without broad repo write access
+
+## Durable Expertise
+
+Each agent owns a structured YAML mental model under:
+
+- `.claude/crew/<crew>/expertise/<agent>-mental-model.yaml`
+
+This is one of the main differences from plain Claude Code:
+
+- expertise is durable across sessions
+- the runtime gives every configured agent a stable memory file
+- updates happen through the MCP tool `update_mental_model`, not by ad hoc YAML edits
+
+What the updater does:
+
+- resolves the expertise path from the active `multi-team.yaml`
+- appends structured entries such as `lessons`, `risks`, `decisions`, `tools`, or `open_questions`
+- preserves YAML validity
+- enforces `meta.max_lines`
+- fails closed on ambiguity, malformed YAML, or non-updatable expertise
+
+Typical call shape:
+
+```json
+{
+  "agent": "planning-lead",
+  "category": "lessons",
+  "note": "Route campaign scoping through Planning before Creative execution."
+}
+```
+
+Why this matters:
+
+- orchestrators and leads can keep durable memory without broad file-write permissions
+- teams accumulate reusable operational knowledge instead of losing it per chat session
+- crew behavior becomes more repeatable over time
+
+Detailed guide:
+
+- [docs/mental-model.md](./docs/mental-model.md)
 
 ## Quick Troubleshooting
 

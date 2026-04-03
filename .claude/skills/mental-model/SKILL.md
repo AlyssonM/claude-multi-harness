@@ -26,6 +26,22 @@ Treat them as durable, high-signal memory, not as a transcript or scratchpad.
 
 Use `update_mental_model` to persist durable notes during or after the task.
 
+Call shape:
+
+```json
+{
+  "agent": "<your-agent-id>",
+  "category": "lessons",
+  "note": "Durable lesson or decision worth preserving."
+}
+```
+
+Rules for calling the tool:
+- Always pass your own agent id in `agent`.
+- Prefer `category` values already used by the file: `patterns`, `workflows`, `risks`, `tools`, `decisions`, `lessons`, `open_questions`.
+- Use `expertise_path` only for manual recovery or ambiguity handling. Do not use it as the default path selector.
+- If the tool reports ambiguity across crews, either activate the correct crew first or retry with the specific `expertise_path`.
+
 ## How To Structure
 
 Write structured YAML. Do not be rigid about categories. Let the structure emerge from the work, but keep it organized enough that you can scan it quickly under pressure.

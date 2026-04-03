@@ -34,14 +34,17 @@ Modelo operacional:
 - Hierarquia strict por padrão (`orchestrator -> leads`)
 - Opt-out da hierarquia com `--no-hierarchy`
 - Configuração MCP compatível com o formato esperado pelo Claude (`mcpServers`)
+- Expertise durável por agente com tool MCP local: `update_mental_model`
 
 ## Estrutura
 
 - [`.claude/crew/`](./.claude/crew): definição dos crews
+- [`.claude/crew/<crew>/expertise/`](./.claude/crew): arquivos de mental model durável por agente
 - [`.claude/scripts/`](./.claude/scripts): launcher e utilitários
 - [`.claude/package.json`](./.claude/package.json): comandos de runtime
 - [`.claude/ccr/`](./.claude/ccr): router custom e route map
 - [`.mcp.json`](./.mcp.json): configuração MCP no formato Claude
+- [`docs/mental-model.md`](./docs/mental-model.md): guia de expertise durável e comportamento do updater
 
 ## Pré-Requisitos
 
@@ -178,6 +181,51 @@ Formato:
   }
 }
 ```
+
+Este runtime também inclui um servidor MCP local:
+
+- `mental-model` -> expõe `update_mental_model`
+- usado pelos agentes para persistir expertise durável sem abrir write amplo no repositório
+
+## Expertise Durável
+
+Cada agente possui um mental model YAML estruturado em:
+
+- `.claude/crew/<crew>/expertise/<agent>-mental-model.yaml`
+
+Esse é um dos principais diferenciais em relação ao Claude Code puro:
+
+- a expertise persiste entre sessões
+- o runtime entrega uma memória estável para cada agente configurado
+- as atualizações passam pelo tool MCP `update_mental_model`, não por edição manual e ad hoc de YAML
+
+O updater faz:
+
+- resolve o caminho do expertise a partir do `multi-team.yaml` ativo
+- adiciona entradas estruturadas como `lessons`, `risks`, `decisions`, `tools` ou `open_questions`
+- preserva a validade do YAML
+- aplica `meta.max_lines`
+- falha de forma segura em ambiguidade, YAML malformado ou expertise não atualizável
+
+Formato típico de chamada:
+
+```json
+{
+  "agent": "planning-lead",
+  "category": "lessons",
+  "note": "Route campaign scoping through Planning before Creative execution."
+}
+```
+
+Por que isso importa:
+
+- orchestrators e leads mantêm memória durável sem precisar de permissões amplas de escrita
+- os times acumulam conhecimento operacional reutilizável em vez de perdê-lo a cada sessão
+- o comportamento das crews fica mais repetível ao longo do tempo
+
+Guia detalhado:
+
+- [docs/mental-model.md](./docs/mental-model.md)
 
 ## Troubleshooting Rápido
 

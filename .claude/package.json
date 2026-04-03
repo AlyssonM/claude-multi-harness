@@ -1,9 +1,10 @@
 {
-  "name": "claude-multi-harness",
-  "version": "0.1.0",
+  "name": "multi-agents-claude-runtime",
   "private": true,
-  "license": "MIT",
   "type": "module",
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
   "bin": {
     "ccmh": "bin/ccmh"
   },

@@ -105,6 +105,8 @@ Use Claude harness tool names and runtime semantics:
 - Document/spec/content workers: add `write`, `edit`
 - Code/script execution workers: add `bash`
 
+In Claude runtime, `update_mental_model` is a local MCP-backed tool. Agents should call it with their own `agent` id instead of editing expertise YAML manually.
+
 Avoid OpenCode-only names (`task`, `update-mental-model`, `glob`, `list`) in Claude output.
 
 ## MCP Inference Rules (Claude)

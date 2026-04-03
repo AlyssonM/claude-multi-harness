@@ -16,7 +16,7 @@ Shared skills live at:
 .claude/skills/
 ```
 
-Tool availability is declared per agent in `multi-team.yaml` / agent frontmatter and resolved at runtime (plus MCP tools from `.mcp.json` / `.claude/mcp.json`).
+Tool availability is declared per agent in `multi-team.yaml` / agent frontmatter and resolved at runtime (plus MCP tools from `.mcp.json`).
 
 Current crews in this branch:
 
@@ -55,6 +55,8 @@ Every `orchestrator`, `lead`, and `member` block follows the same shape:
 - `description`: short operational purpose
 - `prompt`: path to the agent prompt markdown file
 - `expertise`: mental-model file and update policy
+  - Claude runtime resolves updates through the local MCP tool `update_mental_model`
+  - agents should call it with their own `agent` id, not by editing YAML ad hoc
 - `model`: usually `inherit`, unless intentionally pinned
 - `tools`: allowed tools for that agent
 - `skills`: reusable skill files loaded by the agent
