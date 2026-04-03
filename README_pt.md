@@ -165,6 +165,12 @@ Mostrar help do launcher:
 ccmh run --help
 ```
 
+Executar diagnóstico do ambiente:
+
+```bash
+ccmh doctor
+```
+
 Se o CCR não aplicar mudanças de rota:
 
 ```bash
@@ -175,6 +181,20 @@ Se quiser validar o comando sem abrir a TUI:
 
 ```bash
 ccmh run --crew marketing --dry-run -- --version
+```
+
+## Checks de Contribuição
+
+Validar arquivos do runtime:
+
+```bash
+npm --prefix .claude run check:runtime
+```
+
+Executar smoke tests:
+
+```bash
+npm --prefix .claude run test:smoke
 ```
 
 ## Suporte e Patrocínio

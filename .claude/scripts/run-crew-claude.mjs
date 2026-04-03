@@ -12,7 +12,7 @@ const runtimeRoot = resolveRuntimeRoot(repoRoot);
 const crewRoot = path.join(runtimeRoot, "crew");
 const activeMetaPath = path.join(runtimeRoot, ".active-crew.json");
 
-const DEFAULT_POLICY = "economy";
+const DEFAULT_POLICY = "balanced";
 const DEFAULT_STRICT_HIERARCHY = parseBooleanEnv(
   process.env.MULTI_STRICT_HIERARCHY ?? process.env.PI_MULTI_STRICT_HIERARCHY,
   true,
@@ -78,7 +78,7 @@ function parseArgs(argv) {
 	const args = {
 		crew: undefined,
 		config: undefined,
-		policy: process.env.MULTI_CCR_POLICY?.trim() || process.env.PI_MULTI_CCR_POLICY?.trim() || DEFAULT_POLICY,
+		policy: undefined,
 		rootModel: undefined,
 		strictHierarchy: DEFAULT_STRICT_HIERARCHY,
 		ccrCommand: "ccr",
@@ -193,6 +193,8 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
+  const routeMapDefault = resolveDefaultPolicyFromRouteMap();
+  const effectiveDefault = routeMapDefault || DEFAULT_POLICY;
   console.log("Usage: ccmh run [options] [-- <claude-args>]");
   console.log("");
   console.log("Open Claude Code TUI through CCR, loading crew agents as custom agents.");
@@ -200,7 +202,7 @@ function printHelp() {
   console.log("Options:");
   console.log("  --crew <name>            Use .claude/crew/<name>/multi-team.yaml");
   console.log("  --config <path>          Explicit config path (overrides active crew)");
-  console.log(`  --policy <name>          Route policy tag (default: ${DEFAULT_POLICY})`);
+  console.log(`  --policy <name>          Route policy tag (default: ${effectiveDefault})`);
   console.log("  --root-model <ref>       Root model tag override (provider,model or provider/model)");
   console.log("  --ccr-command <bin>      Runner command (default: ccr)");
   console.log("  --claude-command <bin>   Claude binary path (default: CLAUDE_PATH or claude)");
@@ -458,6 +460,15 @@ function resolveRouteMapPath() {
   return null;
 }
 
+function resolveDefaultPolicyFromRouteMap() {
+  const mapPath = resolveRouteMapPath();
+  if (!mapPath) return "";
+  const routeMap = readJson(mapPath);
+  if (!routeMap || typeof routeMap !== "object") return "";
+  const policy = normalizeRouteKey(routeMap.default_policy);
+  return policy || "";
+}
+
 function resolveRootModelFromRoutePolicy(policyName) {
   const mapPath = resolveRouteMapPath();
   if (!mapPath) return null;
@@ -526,7 +537,7 @@ function resolveConfigPath(args) {
     return path.join(crewRoot, crews[0], "multi-team.yaml");
   }
 
-  fail("no crew selected. Use --crew <name> or activate one with ccmh use <crew>");
+  fail("no crew selected. Use --crew <name> or activate one with ccmh use <crew>.");
   if (crews.length > 0) {
     console.log("Available crews:");
     for (const crew of crews) console.log(`- ${crew}`);
@@ -970,7 +981,9 @@ function main() {
     return;
   }
 
-  const policy = normalizeRouteKey(args.policy) || DEFAULT_POLICY;
+  const envPolicy = normalizeRouteKey(process.env.MULTI_CCR_POLICY?.trim() || process.env.PI_MULTI_CCR_POLICY?.trim() || "");
+  const routeMapDefaultPolicy = resolveDefaultPolicyFromRouteMap();
+  const policy = normalizeRouteKey(args.policy) || routeMapDefaultPolicy || envPolicy || DEFAULT_POLICY;
   const includeRootRouteTag = args.rootRoute || !!args.rootModel;
   const derivedRoot = args.rootModel ? normalizeCcrModelRef(args.rootModel) : null;
   const routeRoot = includeRootRouteTag && !derivedRoot ? resolveRootModelFromRoutePolicy(policy) : null;

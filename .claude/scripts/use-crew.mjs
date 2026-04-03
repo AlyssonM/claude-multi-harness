@@ -43,7 +43,7 @@ function main() {
   const crews = listCrews()
 
   if (!crew) {
-    console.log("Usage: npm --prefix .claude run use:crew -- <crew>")
+    console.log("Usage: ccmh use <crew>")
     console.log("")
     console.log("Available crews:")
     for (const item of crews) console.log(`- ${item}`)
@@ -78,7 +78,7 @@ function main() {
   console.log(`- metadata: ${path.relative(repoRoot, activeMetaPath)}`)
   console.log("")
   console.log("Run:")
-  console.log(`npm --prefix .claude run run:crew -- --crew ${crew}`)
+  console.log(`ccmh run --crew ${crew}`)
 }
 
 main()

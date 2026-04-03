@@ -45,6 +45,17 @@
       "intents": {
         "coding": "lmstudio,nvidia/nemotron-3-nano-4b"
       }
+    },
+    "balanced": {
+      "roles": {
+        "orchestrator": "Zai Coding Plan,glm-5-turbo",
+        "lead": "Zai Coding Plan,glm-4.7-flash",
+        "worker": "Zai Coding Plan,glm-5"
+      },
+      "intents": {
+        "coding": "Zai Coding Plan,glm-5",
+        "validation": "Zai Coding Plan,glm-4.7"
+      }
     }
   },
   "systems": {

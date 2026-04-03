@@ -165,6 +165,12 @@ Show launcher help:
 ccmh run --help
 ```
 
+Run environment doctor:
+
+```bash
+ccmh doctor
+```
+
 If CCR does not apply route changes:
 
 ```bash
@@ -175,6 +181,20 @@ If you only want to validate the command without opening TUI:
 
 ```bash
 ccmh run --crew marketing --dry-run -- --version
+```
+
+## Contributor Checks
+
+Validate runtime files:
+
+```bash
+npm --prefix .claude run check:runtime
+```
+
+Run smoke tests:
+
+```bash
+npm --prefix .claude run test:smoke
 ```
 
 ## Support & Sponsoring
