@@ -3,6 +3,8 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+import { loadAndValidateRouteMap } from "./lib/route-map.mjs";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const runtimeRoot = path.resolve(__dirname, "..");
@@ -38,22 +40,6 @@ function checkSyntax(filePath) {
   if (proc.status !== 0) {
     const detail = (proc.stderr || proc.stdout || "unknown syntax error").trim();
     throw new Error(detail);
-  }
-}
-
-function checkRouteMap(filePath) {
-  const routeMap = readJson(filePath);
-  if (!routeMap || typeof routeMap !== "object") {
-    throw new Error("route map must be a JSON object");
-  }
-  if (!routeMap.default_policy || typeof routeMap.default_policy !== "string") {
-    throw new Error("route map is missing default_policy");
-  }
-  if (!routeMap.policies || typeof routeMap.policies !== "object") {
-    throw new Error("route map is missing policies");
-  }
-  if (!routeMap.policies[routeMap.default_policy]) {
-    throw new Error(`default_policy "${routeMap.default_policy}" is not defined`);
   }
 }
 
@@ -98,7 +84,10 @@ function main() {
 
     try {
       if (filePath.endsWith("route-map.example.json")) {
-        checkRouteMap(filePath);
+        const validation = loadAndValidateRouteMap(filePath);
+        if (!validation.ok) {
+          throw new Error(validation.issues.join("; "));
+        }
       } else {
         readJson(filePath);
       }

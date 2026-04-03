@@ -8,6 +8,7 @@
   "scripts": {
     "check:runtime": "node scripts/check-runtime.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "ccr:validate-route-map": "node scripts/validate-ccr-route-map.mjs",
     "list:crews": "node scripts/list-crews.mjs",
     "use:crew": "node scripts/use-crew.mjs",
     "clear:crew": "node scripts/clear-crew.mjs",

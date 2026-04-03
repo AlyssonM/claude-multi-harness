@@ -4,6 +4,8 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+import { loadAndValidateRouteMap } from "./lib/route-map.mjs";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const runtimeScriptsRoot = path.resolve(__dirname, "..");
@@ -96,29 +98,6 @@ function rel(filePath) {
   return path.isAbsolute(filePath) ? path.relative(repoRoot, filePath) || "." : filePath;
 }
 
-function routeMapSummary(routeMap) {
-  const defaultPolicy = typeof routeMap.default_policy === "string" ? routeMap.default_policy.trim() : "";
-  const policies = routeMap.policies && typeof routeMap.policies === "object"
-    ? Object.keys(routeMap.policies).filter((key) => {
-        return routeMap.policies[key] && typeof routeMap.policies[key] === "object" && !Array.isArray(routeMap.policies[key]);
-      })
-    : [];
-
-  if (!defaultPolicy) {
-    throw new Error("missing default_policy");
-  }
-
-  if (!routeMap.policies || typeof routeMap.policies !== "object") {
-    throw new Error("missing policies object");
-  }
-
-  if (!routeMap.policies[defaultPolicy]) {
-    throw new Error(`default_policy "${defaultPolicy}" is not defined under policies`);
-  }
-
-  return { defaultPolicy, policyCount: policies.length };
-}
-
 function pushResult(results, label, status, detail, blocking = false) {
   results.push({ label, status, detail, blocking });
 }
@@ -187,7 +166,11 @@ function main() {
     pushResult(results, "route_map_source", "error", `missing ${rel(sourceRouteMapPath)}`, true);
   } else {
     try {
-      const summary = routeMapSummary(readJson(sourceRouteMapPath));
+      const validation = loadAndValidateRouteMap(sourceRouteMapPath);
+      if (!validation.ok) {
+        throw new Error(validation.issues.join("; "));
+      }
+      const summary = validation.summary;
       pushResult(
         results,
         "route_map_source",
@@ -197,7 +180,11 @@ function main() {
 
       if (existsSync(ccrHomeRouteMapPath)) {
         try {
-          const homeSummary = routeMapSummary(readJson(ccrHomeRouteMapPath));
+          const homeValidation = loadAndValidateRouteMap(ccrHomeRouteMapPath);
+          if (!homeValidation.ok) {
+            throw new Error(homeValidation.issues.join("; "));
+          }
+          const homeSummary = homeValidation.summary;
           const status = homeSummary.defaultPolicy === summary.defaultPolicy ? "ok" : "warn";
           const detail = `${rel(ccrHomeRouteMapPath)} (default_policy=${homeSummary.defaultPolicy})`;
           pushResult(results, "route_map_ccr_home", status, detail, false);

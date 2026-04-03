@@ -125,6 +125,12 @@ ccmh ccr:install-router
 ccmh ccr:sync-route-map
 ```
 
+Validate the route map and detect sync drift:
+
+```bash
+ccmh ccr:validate-route-map
+```
+
 Run with a policy:
 
 ```bash
@@ -137,6 +143,9 @@ Force routing for the root/orchestrator:
 ccmh run --crew marketing \
   --root-route --root-model lmstudio,nvidia/nemotron-3-nano-4b
 ```
+
+Routing precedence and scope resolution:
+- [docs/routing.md](./docs/routing.md)
 
 ## MCP (Claude Format)
 
@@ -188,13 +197,19 @@ ccmh run --crew marketing --dry-run -- --version
 Validate runtime files:
 
 ```bash
-npm --prefix .claude run check:runtime
+ccmh check:runtime
+```
+
+Validate the CCR route map only:
+
+```bash
+ccmh ccr:validate-route-map
 ```
 
 Run smoke tests:
 
 ```bash
-npm --prefix .claude run test:smoke
+ccmh test:smoke
 ```
 
 ## Support & Sponsoring

@@ -18,7 +18,10 @@ const COMMANDS = {
   use: 'use-crew.mjs',
   'clear:crew': 'clear-crew.mjs',
   clear: 'clear-crew.mjs',
+  'check:runtime': 'check-runtime.mjs',
   doctor: 'doctor.mjs',
+  'ccr:validate-route-map': 'validate-ccr-route-map.mjs',
+  'test:smoke': 'test-smoke.mjs',
   'run:crew': 'run-crew-claude.mjs',
   run: 'run-crew-claude.mjs',
   'run:crew:claude': 'run-crew-claude.mjs',
@@ -35,7 +38,10 @@ function printHelp() {
   console.log('  ccmh use --<crew>');
   console.log('  ccmh --use <crew>');
   console.log('  ccmh clear');
+  console.log('  ccmh check:runtime');
   console.log('  ccmh doctor');
+  console.log('  ccmh ccr:validate-route-map');
+  console.log('  ccmh test:smoke');
   console.log('  ccmh run --crew <crew> [run-options] [-- <claude-args>]');
   console.log('');
   console.log('Examples:');
@@ -43,9 +49,12 @@ function printHelp() {
   console.log('  ccmh use marketing');
   console.log('  ccmh use --marketing');
   console.log('  ccmh --use marketing');
+  console.log('  ccmh check:runtime');
   console.log('  ccmh run --crew marketing --dry-run');
   console.log('  ccmh run --crew marketing -- -c');
   console.log('  ccmh doctor');
+  console.log('  ccmh ccr:validate-route-map');
+  console.log('  ccmh test:smoke');
 }
 
 function runScript(scriptFile, args) {
