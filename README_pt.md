@@ -13,7 +13,20 @@ Modelo operacional:
 - `team leads`
 - `workers`
 
-## O Que Esta Branch Entrega
+## Diferenças Entre Claude Code e Claude Multi-Team Harness
+
+| Área | Claude Code puro | Claude Multi-Team Harness |
+| --- | --- | --- |
+| Modelo de sessão | Uma sessão interativa com um agente principal | Runtime hierárquico com `orchestrator -> leads -> workers` |
+| Estrutura de times | Uso manual de agentes | Topologia de crew declarada em `.claude/crew/<crew>/multi-team.yaml` |
+| Roteamento | Seleção direta de modelo ou CCR simples | Roteamento por policy via CCR com resolução por role/team/intent |
+| Guardrails de delegação | Dependem do operador | Hierarquia strict por padrão, com visibilidade apenas dos leads na root |
+| Ownership dos agentes | Ad hoc | Prompts, expertise, tools, skills e domínio por agente |
+| Uso de MCP | Manual por sessão | Estratégia compartilhada de MCP embutida na topologia e nos prompts |
+| Validação | Checks manuais | `ccmh doctor`, `ccmh check:runtime`, validação de route map e smoke tests |
+| Repetibilidade | Depende da disciplina do operador | Definições de crew reexecutáveis e topologia multi-agent reutilizável |
+
+## O Que Este Projeto Entrega
 
 - Launcher único para Claude TUI com crews: `run:crew`
 - Geração automática de custom agents a partir de `.claude/crew/<crew>/multi-team.yaml`

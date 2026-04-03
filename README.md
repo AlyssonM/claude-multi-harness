@@ -15,6 +15,19 @@ Operational model:
 - `team leads`
 - `workers`
 
+## Differences Between Claude Code and Claude Multi-Team Harness
+
+| Area | Plain Claude Code | Claude Multi-Team Harness |
+| --- | --- | --- |
+| Session model | Single interactive agent session | Hierarchical runtime with `orchestrator -> leads -> workers` |
+| Team structure | Manual agent usage | Crew topology declared in `.claude/crew/<crew>/multi-team.yaml` |
+| Routing | Direct model selection or plain CCR usage | Policy-based CCR routing with scoped role/team/intent resolution |
+| Delegation guardrails | User-driven | Strict hierarchy by default, with lead-only visibility at the root |
+| Agent ownership | Ad hoc | Per-agent prompts, expertise, tools, skills, and domain ownership |
+| MCP usage | Manual per session | Shared MCP strategy embedded into crew topology and prompts |
+| Validation | Manual sanity checks | `ccmh doctor`, `ccmh check:runtime`, route-map validation, smoke tests |
+| Repeatability | Depends on operator discipline | Re-runnable crew definitions and reusable multi-agent topology |
+
 ## What This Project Delivers
 
 - Single launcher for Claude TUI with crews: `run:crew`
